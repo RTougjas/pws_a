@@ -7,9 +7,9 @@
 		<link href="<?php echo base_url("bootstrap/css/bootstrap.min.css");?>" rel="stylesheet">
 		<link href="<?php echo base_url("css/styles.css");?>" rel="stylesheet">
 		<?php $this->lang->load( 'tekst_lang', 'estonian' )?>
-		<?php $location = $this->session->userdata( 'location' );?>
+		<?php $location = $this->session->userdata( 'location_array' );?>
     </head>
-<body>	
+<body>
 	<div class="container">
 		<div class="row">
 			<nav class="navbar navbar-default">
@@ -31,8 +31,8 @@
 								<?php if( $location[$i]->location_id == 1 ) { ?>
 									<li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Tartu<span class="caret"></span></a>
 										<ul class="dropdown-menu">
-											<li><a href="<?php echo site_url('Menu/displayMenuItems/'.$location[$i]->location_id);?>">Tooted</a></li>
-											<li><a href="#">Toodete kategooriad</a></li>
+											<li><a href="<?php echo site_url('Management/displayMenuItems/'.$location[$i]->location_id);?>">Tooted</a></li>
+											<li><a href="<?php echo site_url('Management/displayCategories/'.$location[$i]->location_id);?>">Toodete kategooriad</a></li>
 											<li><a href="#">Something else here</a></li>
 											<li role="separator" class="divider"></li>
 											<li><a href="#">Separated link</a></li>
@@ -43,15 +43,17 @@
 								<?php } else if ( $location[$i]->location_id == 2) { ?>
 									<li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false" >Võru<span class="caret"></span></a>
 										<ul class="dropdown-menu">
-											<li><a href="#">Menüü</a></li>
-											<li><a href="#"></a></li>
-											<li><a href="#">Toad</a></li>
+											<li><a href="<?php echo site_url('Management/displayMenuItems/'.$location[$i]->location_id);?>">Tooted</a></li>
+											<li><a href="<?php echo site_url('Management/displayCategories/'.$location[$i]->location_id);?>">Toodete kategooriad</a></li>
 											<li role="separator" class="divider"></li>
-											<li><a href="#">Separated link</a></li>
+											<li><a href="<?php echo site_url('Management/displayAllRooms/'.$location[$i]->location_id);?>">Kõik toad</a></li>
+											<li><a href="<?php echo site_url('Management/insertRoom/'.$location[$i]->location_id);?>">Lisa uus tuba</a></li>
 											<li role="separator" class="divider"></li>
 											<li><a href="#">One more separated link</a></li>
 										</ul>
 									</li>
+								<?php } else { ?>
+
 								<?php } ?>
 							<?php } ?>
 							<li class="dropdown">

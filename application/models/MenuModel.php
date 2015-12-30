@@ -6,45 +6,12 @@ class MenuModel extends CI_Model {
 	public function __construct() {
 		$this->load->database();
 	}
-	/**
-	*	Insert menuitems to the database. 
-	*
-	*	@param	$data	An array containing key-value pairs.
-	*/
-	public function insertMenuItem($data) {
-		
-		$this->db->insert('menuItem', $data);
-	}
-	/**
-	*	Update menuitem table.
-	*
-	*	@param	$item_id	ID of menuitem to be updated.
-	*	@param	$data		Array of values that need to be updated. 
-	*/
-	public function updateMenuItem($item_id, $data) {
-		
-		$this->db->where('id', $item_id);
-		$this->db->update('menuItem', $data);
-	}
 	
 	/**
-	*	Returns one item details. 
-	*
-	*	@param $item_id	ID of menuItem that is queried. 
-	*
-	*	@return array:= menuitem_id, menuitem_name, menuitem_price, category_id, category_name, 						location_id, location_name.
-	*/
-	
-	/**
-	*	Delete item from menu table.
+	*	@param	$item_id	id of item to be returned
 	*	
-	*	@param	$item_id	Id of item to be deleted.
+	*	@return	menuItem.
 	*/
-	public function deleteMenuItem($item_id) {
-		
-		$this->db->delete('menuItem', $item_id);
-	}
-	
 	public function getMenuItem($item_id) {
 			
 		$this->db->select('*');
@@ -53,7 +20,6 @@ class MenuModel extends CI_Model {
 		$query = $this->db->get();
 		
 		return $query->result();
-		
 	}
 	
 	/**
@@ -78,27 +44,31 @@ class MenuModel extends CI_Model {
 	/**
 	*
 	*
+	*
 	*/
-	public function insertCategory($data) {
+	public function getRoom($item_id) {
 		
-		$this->db->insert('category', $data);
+		$this->db->select('*');
+		$this->db->from('v_menu_items');
+		$this->db->where('general_id', 3);
+		$query = $this->db->get();
+		
+		return $query->result();
 	}
 	
 	/**
 	*
 	*
 	*/
-	public function updateCategory($category_id, $data) {
-		$this->db->where('id', $category_id);
-		$this->db->update('category', $data);
-	}
-	
-	/**
-	*
-	*
-	*/
-	public function deleteCategory($category_id) {
+	public function getAllRooms($location_id) {
 		
+		$this->db->select('*');
+		$this->db->from('v_menu_items');
+		$this->db->where('general_id', 3);
+		$this->db->where('location_id', $location_id);
+		$query = $this->db->get();
+		
+		return $query->result();
 	}
 	
 	/**
@@ -120,6 +90,18 @@ class MenuModel extends CI_Model {
 	}
 	
 	/**
+	*	
+	*	@param	$location_id	distinguishing location. 
+	*	@return	distinct values of general categories. 
+	*/
+	public function getGeneralCategories($location_id) {
+		$this->db->select('*');
+		$this->db->from('generalCategory');
+		$query = $this->db->get();
+		
+		return $query->result();
+	}	
+	/**
 	*	return all categories under specific general categories.
 	*	1 - food, 2 - beverages, 3 - rooms, 4 - other. (these can not be edited).
 	*	
@@ -137,6 +119,93 @@ class MenuModel extends CI_Model {
 		
 		return $query->result();
 	}
+	
+	/**
+	*	Insert menuitem to the database. 
+	*
+	*	@param	$data	An array containing key-value pairs.
+	*/
+	public function insertMenuItem($data) {
+		
+		$this->db->insert('menuItem', $data);
+	}
+	
+	/**
+	*
+	*
+	*/
+	public function insertCategory($data) {
+		
+		$this->db->insert('category', $data);
+	}
+	
+	/**
+	*
+	*
+	*/
+	public function insertRoom($data) {
+		
+		$this->db->insert('menuItem', $data);
+	}
+	
+	/**
+	*
+	*
+	*/
+	public function updateCategory($category_id, $data) {
+		$this->db->where('id', $category_id);
+		$this->db->update('category', $data);
+	}
+	
+	/**
+	*	Update menuitem table.
+	*
+	*	@param	$item_id	ID of menuitem to be updated.
+	*	@param	$data		Array of values that need to be updated. 
+	*/
+	public function updateMenuItem($item_id, $data) {
+		
+		$this->db->where('id', $item_id);
+		$this->db->update('menuItem', $data);
+	}
+	
+	/**
+	*
+	*
+	*/
+	public function updateRoom($room_id, $data) {
+		
+	}
+	
+	/**
+	*
+	*
+	*/
+	public function deleteCategory($category_id) {
+		
+		$this->db->where('id', $category_id);
+		$this->db->delete('category');
+	}
+	
+	/**
+	*	Delete item from menu table.
+	*	
+	*	@param	$item_id	Id of item to be deleted.
+	*/
+	public function deleteMenuItem($item_id) {
+		
+		$this->db->where('id', $item_id);
+		$this->db->delete('menuItem');
+	}
+	
+	/**
+	*
+	*
+	*/
+	public function deleteRoom($room_id) {
+		
+	}
+	
 	
 }
 

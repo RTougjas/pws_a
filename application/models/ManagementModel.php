@@ -30,6 +30,15 @@ class ManagementModel extends CI_Model {
 		return $query->result();
 	}
 	
+	public function getLocationDetails($location_id) {
+		$this->db->select('*');
+		$this->db->from('location');
+		$this->db->where('id', $location_id);
+		$query = $this->db->get();
+		
+		return $query->result();
+	}
+	
 	public function deleteUser($user_id) {
 		
 		$this->db->where('id', $user_id);
