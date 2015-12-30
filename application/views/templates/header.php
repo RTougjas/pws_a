@@ -37,7 +37,7 @@
 											<li role="separator" class="divider"></li>
 											<li><a href="#">Separated link</a></li>
 											<li role="separator" class="divider"></li>
-											<li><a href="#">One more separated link</a></li>
+											<li><a href="<?php echo site_url('Management/displayGalleryUpload/'.$location[$i]->location_id);?>">Galerii</a></li>
 										</ul>
 									</li>
 								<?php } else if ( $location[$i]->location_id == 2) { ?>
@@ -49,7 +49,7 @@
 											<li><a href="<?php echo site_url('Management/displayAllRooms/'.$location[$i]->location_id);?>">Kõik toad</a></li>
 											<li><a href="<?php echo site_url('Management/insertRoom/'.$location[$i]->location_id);?>">Lisa uus tuba</a></li>
 											<li role="separator" class="divider"></li>
-											<li><a href="#">One more separated link</a></li>
+											<li><a href="<?php echo site_url('Management/displayGalleryUpload/'.$location[$i]->location_id);?>">Galerii</a></li>
 										</ul>
 									</li>
 								<?php } else { ?>

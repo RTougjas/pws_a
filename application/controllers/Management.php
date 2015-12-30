@@ -6,7 +6,7 @@ class Management extends CI_Controller {
 	function __construct() {
 		parent::__construct();
 		$this->load->database();
-		$this->load->model(array('MenuModel', 'ManagementModel'));
+		$this->load->model(array('MenuModel', 'ManagementModel', 'UploadModel'));
 		$this->load->library(array('ion_auth','form_validation'));
 		$this->load->helper(array('url','language'));
 		$this->lang->load('tekst_lang', 'estonian');
@@ -60,6 +60,62 @@ class Management extends CI_Controller {
 		$this->load->view('v_rooms', $this->data);
 		$this->load->view('templates/footer');
 		
+	}
+	
+	public function displayGalleryUpload($location_id) {
+		
+		// code for previous photos.
+		$this->data['photos'] = $this->UploadModel->getAllGalleryPhotos($location_id);
+		$this->data['title'] = "Pildi laadimine galeriisse";
+		$this->data['location_details'] = $this->ManagementModel->getLocationDetails($location_id);
+		
+		$this->load->view('templates/header');
+		$this->load->view('v_gallery_upload', $this->data);
+		$this->load->view('templates/footer');
+		
+	}
+	
+	public function doUpload($location_id) {
+		
+        $config['upload_path']          = 'uploads/';
+        $config['allowed_types']        = 'gif|jpg|png|tiff|tif';
+        $config['max_size']             = 100000;
+        $config['max_width']            = 102400;
+        $config['max_height']           = 76800;
+
+        $this->load->library('upload', $config);
+		
+		if( $this->upload->do_upload('userfile')) {
+
+			$data = array('upload_data' => $this->upload->data());
+			
+			if(!empty($this->input->post('item_photo'))) {
+				$values = array(
+					'menuItem' => $this->input->post('item_photo'),
+					'url' => base_url().$config['upload_path'].$data['upload_data']['file_name'],
+					'public' => 1,
+					'location' => $location_id
+				);
+			} else {
+				$values = array(
+					'url' => base_url().$config['upload_path'].$data['upload_data']['file_name'],
+					'public' => 1,
+					'location' => $location_id
+				);
+			}
+			
+			$this->UploadModel->upload($values);
+		
+			$message = 'Pilt edukalt laetud galeriisse';
+			$this->session->set_flashdata('success', $message);
+			
+			redirect('Management/displayGalleryUpload/'.$location_id, 'refresh');
+			
+		}
+		else {
+			$this->session->set_flashdata('error', $this->upload->display_errors());
+			redirect('Management/displayGalleryUpload/'.$location_id);
+		}
 	}
 	
 	public function insertMenuItem($location_id) {
