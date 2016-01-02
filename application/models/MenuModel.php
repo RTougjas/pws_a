@@ -146,6 +146,9 @@ class MenuModel extends CI_Model {
 	public function insertRoom($data) {
 		
 		$this->db->insert('menuItem', $data);
+		$this->db->select('LAST_INSERT_ID() AS last_id');
+		$query = $this->db->get();
+		return $query->result();
 	}
 	
 	/**
@@ -203,6 +206,7 @@ class MenuModel extends CI_Model {
 	*
 	*/
 	public function deleteRoom($room_id) {
+		
 		
 	}
 	

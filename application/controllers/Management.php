@@ -6,7 +6,7 @@ class Management extends CI_Controller {
 	function __construct() {
 		parent::__construct();
 		$this->load->database();
-		$this->load->model(array('MenuModel', 'ManagementModel', 'UploadModel'));
+		$this->load->model(array('MenuModel', 'ManagementModel', 'PhotoModel'));
 		$this->load->library(array('ion_auth','form_validation'));
 		$this->load->helper(array('url','language'));
 		$this->lang->load('tekst_lang', 'estonian');
@@ -43,16 +43,25 @@ class Management extends CI_Controller {
 		$this->load->view('templates/footer');
 	}
 	
-	public function displayRoom($location_id) {
-		$this->data['location_details'] = $this->ManagementModel->getLocationDetails($location_id);
+	public function displayRoom($location_id, $room_id) {
 		
-		## TO-DO 
+		$this->data['location_details'] = $this->ManagementModel->getLocationDetails($location_id);
+		$this->data['room_details'] = $this->MenuModel->getMenuItem($room_id);
+		$this->data['categories'] = $this->MenuModel->getSpecificCategories($location_id, 3);
+		$this->data['photos'] = $this->PhotoModel->getMenuItemPhotos($location_id, $room_id);
+		$this->data['title'] = $this->data['room_details'][0]->menuItem_name;
+		
+		$this->load->view('templates/header');
+		$this->load->view('templates/v_room_template', $this->data);
+		$this->load->view('templates/footer');
+		 
 		
 	}
 	
 	public function displayAllRooms($location_id) {
 		
 		$this->data['location_details'] = $this->ManagementModel->getLocationDetails($location_id);
+		$this->data['categories'] = $this->MenuModel->getSpecificCategories($location_id, 3);
 		$this->data['rooms'] = $this->MenuModel->getAllRooms($location_id);
 		$this->data['title'] = "Toad";
 		
@@ -62,11 +71,22 @@ class Management extends CI_Controller {
 		
 	}
 	
+	public function displayCreateRoom($location_id) {
+		
+		$this->data['location_details'] = $this->ManagementModel->getLocationDetails($location_id);
+		$this->data['categories'] = $this->MenuModel->getSpecificCategories($location_id, 3);
+		$this->data['title'] = "Lisa uus tuba";
+		
+		$this->load->view('templates/header');
+		$this->load->view('v_create_room', $this->data);
+		$this->load->view('templates/footer');
+	}
+	
 	public function displayGalleryUpload($location_id) {
 		
 		// code for previous photos.
-		$this->data['photos'] = $this->UploadModel->getAllGalleryPhotos($location_id);
-		$this->data['title'] = "Pildi laadimine galeriisse";
+		$this->data['photos'] = $this->PhotoModel->getAllGalleryPhotos($location_id);
+		$this->data['title'] = "Galerii";
 		$this->data['location_details'] = $this->ManagementModel->getLocationDetails($location_id);
 		
 		$this->load->view('templates/header');
@@ -94,17 +114,19 @@ class Management extends CI_Controller {
 					'menuItem' => $this->input->post('item_photo'),
 					'url' => base_url().$config['upload_path'].$data['upload_data']['file_name'],
 					'public' => 1,
-					'location' => $location_id
+					'location' => $location_id,
+					'filename' => $config['upload_path'].$data['upload_data']['file_name']
 				);
 			} else {
 				$values = array(
 					'url' => base_url().$config['upload_path'].$data['upload_data']['file_name'],
 					'public' => 1,
-					'location' => $location_id
+					'location' => $location_id,
+					'filename' => $config['upload_path'].$data['upload_data']['file_name']
 				);
 			}
 			
-			$this->UploadModel->upload($values);
+			$this->PhotoModel->upload($values);
 		
 			$message = 'Pilt edukalt laetud galeriisse';
 			$this->session->set_flashdata('success', $message);
@@ -161,9 +183,144 @@ class Management extends CI_Controller {
 	}
 	
 	public function insertRoom($location_id) {
-				
-		$room_name = $this->input->post('room_name');
 		
+		$room_id = $this->input->post('room_id');
+		
+		if(!empty($room_id)) {
+			$this->data['room_details'] = $this->MenuModel->getMenuItem($room_id);
+			
+			$room_name = $this->input->post('room_name');
+			$room_price = $this->input->post('room_price');
+			$room_description = $this->input->post('room_description');
+			$room_category = $this->input->post('selected_room_category');
+			
+			if ($room_name === $this->data['room_details'][0]->menuItem_name &&
+				$room_price === $this->data['room_details'][0]->menuItem_price &&
+				$room_description === $this->data['room_details'][0]->menuItem_description &&
+				$room_category === $this->data['room_details'][0]->category_id ) {
+					
+			    	$config['upload_path']          = 'uploads/';
+			    	$config['allowed_types']        = 'gif|jpg|png|tiff|tif';
+			   	 	$config['max_size']             = 100000;
+			    	$config['max_width']            = 102400;
+			    	$config['max_height']           = 76800;
+
+			    	$this->load->library('upload', $config);
+		
+					if( $this->upload->do_upload('userfile')) {
+
+						$data = array('upload_data' => $this->upload->data());
+				
+						if(!empty($this->input->post('item_photo'))) {
+							$values = array(
+								'menuItem' => $room_id,
+								'url' => base_url().$config['upload_path'].$data['upload_data']['file_name'],
+								'public' => 0,
+								'location' => $location_id,
+								'filename' => $config['upload_path'].$data['upload_data']['file_name']
+							);
+						} else {
+							$values = array(
+								'url' => base_url().$config['upload_path'].$data['upload_data']['file_name'],
+								'public' => 0,
+								'location' => $location_id,
+								'filename' => $config['upload_path'].$data['upload_data']['file_name']
+							);
+						}
+			
+						$this->PhotoModel->upload($values);
+						
+						$message = 'Pilt laeti edukalt üles';
+						$this->session->set_flashdata('success', $message);
+					
+					} else {
+						
+					}
+					$message = 'Ühtegi muutust ei toimunud';
+					$this->session->set_flashdata('error', $message);
+					
+					redirect('Management/displayRoom/'.$location_id.'/'.$room_id);
+				
+			} else {
+				
+				$values = array (
+					'name' => $room_name,
+					'price' => $room_price,
+					'category' => $room_category,
+					'location' => $location_id,
+					'description' => $room_description	
+				);
+				
+				$this->MenuModel->updateMenuItem($room_id, $values);
+				
+				$message = '<b>'.$room_name.'</b> edukalt muudetud';
+				$this->session->set_flashdata('success', $message);
+			
+				redirect('Management/displayRoom/'.$location_id.'/'.$room_id, 'refresh');
+
+			}
+			
+		}
+		else {
+			
+			$room_name = $this->input->post('room_name');
+			$room_price = $this->input->post('room_price');
+			$room_description = $this->input->post('room_description');
+			$room_category = $this->input->post('selected_room_category');
+		
+			$values = array (
+				'name' => $room_name,
+				'price' => $room_price,
+				'category' => $room_category,
+				'location' => $location_id,
+				'description' => $room_description	
+			);
+		
+			$room_id = $this->MenuModel->insertRoom($values);
+				
+	        $config['upload_path']          = 'uploads/';
+	        $config['allowed_types']        = 'gif|jpg|png|tiff|tif';
+	        $config['max_size']             = 100000;
+	        $config['max_width']            = 102400;
+	        $config['max_height']           = 76800;
+
+	        $this->load->library('upload', $config);
+		
+			if( $this->upload->do_upload('userfile')) {
+
+				$data = array('upload_data' => $this->upload->data());
+				
+				if(!empty($this->input->post('item_photo'))) {
+					$values = array(
+						'menuItem' => $room_id[0]->last_id,
+						'url' => base_url().$config['upload_path'].$data['upload_data']['file_name'],
+						'public' => 0,
+						'location' => $location_id,
+						'filename' => $config['upload_path'].$data['upload_data']['file_name']
+					);
+				} else {
+					$values = array(
+						'url' => base_url().$config['upload_path'].$data['upload_data']['file_name'],
+						'public' => 0,
+						'location' => $location_id,
+						'filename' => $config['upload_path'].$data['upload_data']['file_name']
+					);
+				}
+			
+				$this->PhotoModel->upload($values);
+		
+				$message = '<b>'.$room_name.'</b> edukalt loodud';
+				$this->session->set_flashdata('success', $message);
+			
+				redirect('Management/displayAllRooms/'.$location_id, 'refresh');
+			
+			}
+			else {
+				$this->session->set_flashdata('error', $this->upload->display_errors());
+				redirect('Management/displayAllRooms/'.$location_id);
+			}
+			
+		}
 		
 	}
 	
@@ -247,7 +404,23 @@ class Management extends CI_Controller {
 		
 	}
 	
-	public function buttonSelector($location_id) {
+	public function deletePhoto($location_id, $uri) {
+		
+		$photo_id = $this->input->post('selected_photo');
+		$filename = $this->input->post('filename');
+		
+		$this->PhotoModel->deletePhoto($photo_id, $filename);
+		
+		$message = 'Pilt edukalt kustutatud';
+		$this->session->set_flashdata('success', $message);
+		
+		//redirect('Management/displayMenuItems/'.$location_id);
+		redirect($uri);
+		
+		//redirect('Management/displayGalleryUpload/'.$location_id, 'refresh');
+	}
+	
+	public function buttonSelector($location_id, $uri) {
 		
 		if ( $this->input->post('action') == 'update_menu_item' ) {
 			
@@ -264,6 +437,13 @@ class Management extends CI_Controller {
 		} else if( $this->input->post('action') == 'delete_category' ) {
 			
 			$this->deleteCategory($location_id);
+		} else if( $this->input->post('action') == 'delete_photo' ) {
+			
+			$this->deletePhoto($location_id, $uri);
+			
+		} else if ( $this->input->post('action') == 'delete_room' ) { 
+			
+			$this->deleteMenuitem($location_id);
 			
 		} else { }
 	}

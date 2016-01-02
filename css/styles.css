@@ -1,0 +1,15 @@
+.well-custom {
+	height:100%;
+	width:25em;
+}
+
+.container-gallery {
+	background-color:red;
+	padding:1em;
+}
+
+.photo-border {
+	background-color:black;
+	padding:0.9em;
+	margin:1em;
+}

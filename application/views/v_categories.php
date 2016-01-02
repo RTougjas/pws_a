@@ -79,7 +79,7 @@
 					<?php } ?>
 		    	</select>
 		  	</div>
-		  	<button type="submit" class="btn btn-primary btn-block" name="action" value="update">Lisa</button>
+		  	<button type="submit" class="btn btn-primary btn-block" name="action" value="update">Lisa kategooria</button>
 		</form>
 		</div>
 	</div>

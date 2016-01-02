@@ -47,7 +47,7 @@
 											<li><a href="<?php echo site_url('Management/displayCategories/'.$location[$i]->location_id);?>">Toodete kategooriad</a></li>
 											<li role="separator" class="divider"></li>
 											<li><a href="<?php echo site_url('Management/displayAllRooms/'.$location[$i]->location_id);?>">Kõik toad</a></li>
-											<li><a href="<?php echo site_url('Management/insertRoom/'.$location[$i]->location_id);?>">Lisa uus tuba</a></li>
+											<li><a href="<?php echo site_url('Management/displayCreateRoom/'.$location[$i]->location_id);?>">Lisa uus tuba</a></li>
 											<li role="separator" class="divider"></li>
 											<li><a href="<?php echo site_url('Management/displayGalleryUpload/'.$location[$i]->location_id);?>">Galerii</a></li>
 										</ul>

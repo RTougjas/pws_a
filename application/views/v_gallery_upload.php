@@ -1,3 +1,4 @@
+<?php $current_url = current_url(); ?>
 <div class="container">
 	<div class="row">
 		<div class="text-center">
@@ -11,7 +12,7 @@
 				<?php } ?>
 			</h1>
 		</div>
-	</div>
+	</div> <!-- row -->
 	<div class="row">
 		<div class="text-center">
 			<?php echo validation_errors(); ?>
@@ -25,25 +26,43 @@
 			</div>
 			<?php } ?>
 		</div>
-	</div>
-	<div class="col lg-3 col-md-3 col-sm-3 col-xs-12">
+	</div> <!-- row -->
+	<br>
+	<div class="container">
 		<div class="row">
 			<?php for( $i = 0; $i < sizeOf($photos); $i++) { ?>
-			    <a href="#" class="thumbnail">
-			      <img src="<?php echo $photos[$i]->url; ?>">
-			    </a>
+				<div class="col lg-3 col-md-3 col-sm-3 col-xs-6">
+					<div class="well">
+					<?php echo form_open('Management/buttonSelector/'.$location_details[0]->ID) ?>
+					<form>
+						<input type="hidden" name="selected_photo" value="<?php echo $photos[$i]->ID; ?>">
+						<input type="hidden" name="filename" value="<?php echo $photos[$i]->filename; ?>">
+			    		<a href="#" class="thumbnail"><img src="<?php echo $photos[$i]->url; ?>">
+			    		</a>
+						<button type="submit" name="action" value="delete_photo" class="btn btn-danger">Kustuta</button>
+					</form>
+					<?php form_close(); ?>
+					</div>
+				</div>
 			<?php } ?>
-		  </div>
+		</div> <!-- row -->
+	</div> <!-- container -->
+	<div class="col lg-2 col-md-2 col-sm-2 col-xs-12"></div>
+	<div class="container">
+		<div class="row">
+			<div class="col lg-3 col-md-3 col-sm-3 col-xs-12"></div>
+			<div class="col lg-3 col-md-3 col-sm-3 col-xs-12">
+			<?php echo form_open_multipart('Management/doUpload/'.$location_details[0]->ID);?>
+				<div class="form-group">
+					<label for="fileInput">Lisa failina</label>
+					<input type="file" id="userfile" name="userfile" size="20">
+					<p class="help-block">.jpg .png .gif .tif .tiff</p>
+				</div>
+				<input type="submit" class="btn btn-primary" value="Lae pilt">
+				<?php form_close();?>
+			</div>
+			<div class="col lg-3 col-md-3 col-sm-3 col-xs-12"></div>
+			<div class="col lg-3 col-md-3 col-sm-3 col-xs-12"></div>
 		</div>
 	</div>
-	<div class="col lg-6 col-md-6 col-sm-6 col-xs-12">
-		<?php echo form_open_multipart('Management/doUpload/'.$location_details[0]->ID);?>
-	    <div class="form-group">
-	    	<label for="fileInput">Lisa failina</label>
-	            <input type="file" id="userfile" name="userfile" size="20">
-	            <p class="help-block">.jpg .png .gif .tif .tiff</p>
-	    </div>
-		<input type="submit" class="btn btn-primary" value="Lae pilt">
-	</div>
-	<div class="col lg-3 col-md-3 col-sm-3 col-xs-12"></div>
 </div>

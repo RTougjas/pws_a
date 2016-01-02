@@ -33,7 +33,7 @@
 		    			<label for="password"><?php echo $this->lang->line('new_password_confirm')?></label>
 		    			<input type="password" class="form-control" name="new_password_confirm" placeholder="uus parool" >
 		  	  		</div>
-					<button type="submit" class="btn btn-success btn-block"><?php echo $this->lang->line('btn_change_password');?></button>
+					<button type="submit" class="btn btn-primary btn-block"><?php echo $this->lang->line('btn_change_password');?></button>
 					<br>
 				</form>
 			</div>
